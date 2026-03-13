@@ -281,7 +281,41 @@ return count
 // Returns: string formatted as hhh:mm:ss
 // ============================================================
 function getTotalActiveHoursPerMonth(textFile, driverID, month) {
-    // TODO: Implement this function
+
+let content = fs.readFileSync(textFile, "utf8")
+let lines = content.trim().split("\n")
+
+let totalSeconds = 0
+
+for(let i = 0; i < lines.length; i++){
+    let row = lines[i].split(",")
+
+    let rowDriverID = row[0].trim()
+    let rowDate = row[2].trim()
+    let rowActiveTime = row[7].trim()
+
+    let dateParts = rowDate.split("-")
+    let rowMonth = parseInt(dateParts[1])
+
+    if(rowDriverID == driverID && rowMonth == month){
+
+        let timeParts = rowActiveTime.split(":")
+        let hour = parseInt(timeParts[0])
+        let minute = parseInt(timeParts[1])
+        let second = parseInt(timeParts[2])
+
+        totalSeconds = totalSeconds + hour * 3600 + minute * 60 + second}}
+
+let totalHour = Math.floor(totalSeconds / 3600)
+totalSeconds = totalSeconds % 3600
+
+let totalMinute = Math.floor(totalSeconds / 60)
+let totalSecond = totalSeconds % 60
+
+if(totalMinute < 10){totalMinute = "0" + totalMinute}
+if(totalSecond < 10){totalSecond = "0" + totalSecond}
+
+return totalHour + ":" + totalMinute + ":" + totalSecond
 }
 
 // ============================================================
@@ -294,7 +328,64 @@ function getTotalActiveHoursPerMonth(textFile, driverID, month) {
 // Returns: string formatted as hhh:mm:ss
 // ============================================================
 function getRequiredHoursPerMonth(textFile, rateFile, bonusCount, driverID, month) {
-    // TODO: Implement this function
+
+let rateContent = fs.readFileSync(rateFile, "utf8")
+let rateLines = rateContent.trim().split("\n")
+
+let dayOff = ""
+
+for(let i = 0; i < rateLines.length; i++){
+    let row = rateLines[i].split(",")
+
+    if(row[0].trim() == driverID){
+        dayOff = row[1].trim()
+    }
+}
+
+let content = fs.readFileSync(textFile, "utf8")
+let lines = content.trim().split("\n")
+
+let totalSeconds = 0
+
+for(let i = 0; i < lines.length; i++){
+    let row = lines[i].split(",")
+
+    let rowDriverID = row[0].trim()
+    let rowDate = row[2].trim()
+
+    let dateParts = rowDate.split("-")
+    let rowMonth = parseInt(dateParts[1])
+
+    if(rowDriverID == driverID && rowMonth == month){
+
+        let year = parseInt(dateParts[0])
+        let monthNumber = parseInt(dateParts[1]) - 1
+        let day = parseInt(dateParts[2])
+
+        let dateObject = new Date(year, monthNumber, day)
+
+        let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        let dayName = days[dateObject.getDay()]
+
+        if(dayName != dayOff){
+
+            if(rowDate >= "2025-04-10" && rowDate <= "2025-04-30"){
+                totalSeconds = totalSeconds + 6 * 3600}
+            else{
+                totalSeconds = totalSeconds + 8 * 3600 + 24 * 60}}}}
+
+totalSeconds = totalSeconds - bonusCount * 2 * 3600
+
+let totalHour = Math.floor(totalSeconds / 3600)
+totalSeconds = totalSeconds % 3600
+
+let totalMinute = Math.floor(totalSeconds / 60)
+let totalSecond = totalSeconds % 60
+
+if(totalMinute < 10){totalMinute = "0" + totalMinute}
+if(totalSecond < 10){totalSecond = "0" + totalSecond}
+
+return totalHour + ":" + totalMinute + ":" + totalSecond
 }
 
 // ============================================================

@@ -118,7 +118,7 @@ function getActiveTime(shiftDuration, idleTime) {
     let idleTotal = idleH *3600 + idleM * 60 + idleS
 
     let diff = shiftTotal - idleTotal 
-    
+
     let activeHour = Math.floor(diff / 3600)
     diff = diff % 3600
 
@@ -138,7 +138,20 @@ function getActiveTime(shiftDuration, idleTime) {
 // Returns: boolean
 // ============================================================
 function metQuota(date, activeTime) {
-    // TODO: Implement this function
+
+let time = activeTime.split(":")
+
+let Hour = parseInt(time[0])
+let Minute = parseInt(time[1])
+let Second = parseInt(time[2])
+
+let activeTotal = Hour * 3600 + Minute * 60 + Second 
+
+let quota
+if(date >= "2025-04-10" && date <="2025-04-30"){quota = 6 * 3600}
+else{quota = 8 * 3600 + 24 * 60}
+if(activeTotal >= quota){return true}
+else{return false} 
 }
 
 // ============================================================

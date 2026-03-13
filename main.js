@@ -102,7 +102,33 @@ return idleHour + ":" + idleMinute+":" + idleSecond
 // Returns: string formatted as h:mm:ss
 // ============================================================
 function getActiveTime(shiftDuration, idleTime) {
-    // TODO: Implement this function
+
+    let shift = shiftDuration.split(":")
+    let idle = idleTime.split(":")
+
+    let shiftH = parseInt(shift[0])
+    let shiftM = parseInt(shift[1])
+    let shiftS = parseInt(shift[2])
+
+    let idleH = parseInt(idle[0])
+    let idleM = parseInt(idle[1])
+    let idleS = parseInt(idle[2])
+
+    let shiftTotal = shiftH * 3600 + shiftM * 60 + shiftS
+    let idleTotal = idleH *3600 + idleM * 60 + idleS
+
+    let diff = shiftTotal - idleTotal 
+    
+    let activeHour = Math.floor(diff / 3600)
+    diff = diff % 3600
+
+    let activeMinute = Math.floor(diff / 60)
+    let activeSecond = diff % 60
+
+    if(activeMinute < 10){activeMinute = "0" + activeMinute}
+    if(activeSecond < 10){activeSecond = "0" + activeSecond}
+    
+    return activeHour + ":" + activeMinute + ":" + activeSecond
 }
 
 // ============================================================

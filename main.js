@@ -7,29 +7,42 @@ const fs = require("fs");
 // Returns: string formatted as h:mm:ss
 // ============================================================
 function getShiftDuration(startTime, endTime) {
-let start = startTime.split(" ")
-let end = endTime.split(" ")
+    let start = startTime.trim().split(" ")
+    let end = endTime.trim().split(" ")
 
-let starttimes = start[0].split(":")
-let endtimes = end[0].split(":")
+    let starttimes = start[0].split(":")
+    let endtimes = end[0].split(":")
 
-let endtimesIntH = parseInt(endtimes[0])
-let endtimesIntM = parseInt(endtimes[1])
-let endtimesIntS = parseInt(endtimes[2])
+    let starttimesIntH = parseInt(starttimes[0])
+    let starttimesIntM = parseInt(starttimes[1])
+    let starttimesIntS = parseInt(starttimes[2])
 
-let starttimesIntH = parseInt(starttimes[0])
-let starttimesIntM = parseInt(starttimes[1])
-let starttimesIntS = parseInt(starttimes[2])
+    let endtimesIntH = parseInt(endtimes[0])
+    let endtimesIntM = parseInt(endtimes[1])
+    let endtimesIntS = parseInt(endtimes[2])
 
-if(start[1].toLowerCase() == "pm"){ starttimesIntH = starttimesIntH + 12 }
-if(end[1].toLowerCase() == "pm"){ endtimesIntH = endtimesIntH + 12 }
+    if (start[1].toLowerCase() == "pm" && starttimesIntH != 12) {starttimesIntH = starttimesIntH + 12}  
+    if (start[1].toLowerCase() == "am" && starttimesIntH == 12) {starttimesIntH = 24}
 
-let diffHour = Math.abs(endtimesIntH-starttimesIntH)
-let diffMinute = Math.abs(endtimesIntM-starttimesIntM)
-let diffSecond = Math.abs(endtimesIntS-starttimesIntS)
+    if (end[1].toLowerCase() == "pm" && endtimesIntH != 12) {endtimesIntH = endtimesIntH + 12}
+    if (end[1].toLowerCase() == "am" && endtimesIntH == 12) {endtimesIntH =24}
 
-return diffHour + ":" + diffMinute + ":" + diffSecond
     
+    let startTotal = starttimesIntH * 3600 + starttimesIntM * 60 + starttimesIntS
+    let endTotal = endtimesIntH * 3600 + endtimesIntM * 60 + endtimesIntS
+
+    let diff = endTotal - startTotal
+
+    let diffHour = Math.floor(diff / 3600)
+    diff = diff % 3600
+
+    let diffMinute = Math.floor(diff / 60)
+    let diffSecond = diff % 60
+
+    if (diffMinute < 10) { diffMinute = "0" + diffMinute}
+    if (diffSecond < 10) {diffSecond = "0" + diffSecond}
+        
+    return diffHour + ":" + diffMinute + ":" + diffSecond
 }
 
 // ============================================================
@@ -39,7 +52,47 @@ return diffHour + ":" + diffMinute + ":" + diffSecond
 // Returns: string formatted as h:mm:ss
 // ============================================================
 function getIdleTime(startTime, endTime) {
-    // TODO: Implement this function
+
+    let start = startTime.trim().split(" ")
+    let end = endTime.trim().split(" ")
+
+    let starttimes = start[0].split(":")
+    let endtimes = end[0].split(":")
+
+    let starttimesIntH = parseInt(starttimes[0])
+    let starttimesIntM = parseInt(starttimes[1])
+    let starttimesIntS = parseInt(starttimes[2])
+
+    let endtimesIntH = parseInt(endtimes[0])
+    let endtimesIntM = parseInt(endtimes[1])
+    let endtimesIntS = parseInt(endtimes[2])
+
+    if(start[1].toLowerCase() == "pm" && starttimesIntH != 12){starttimesIntH = starttimesIntH + 12}
+    if(start[1].toLowerCase() == "am" && starttimesIntH == 12){starttimesIntH = 0}
+    if(end[1].toLowerCase() == "pm" && endtimesIntH != 12){endtimesIntH = endtimesIntH + 12}
+    if(end[1].toLowerCase() == "am" && endtimesIntH == 12){endtimesIntH = 0}
+
+    let startTotal = starttimesIntH * 3600 + starttimesIntM * 60 + starttimesIntS
+    let endTotal = endtimesIntH * 3600 + endtimesIntM * 60 + endtimesIntS
+
+    let morningStart = 8*3600
+    let nightEnd = 22*3600
+
+    let idle = 0
+
+    if(startTotal < morningStart){idle = idle + (morningStart - startTotal)}
+    if(endTotal > nightEnd){idle = idle + (endTotal - nightEnd)}
+
+    let idleHour = Math.floor(idle/3600)
+    idle = idle %3600
+
+    let idleMinute = Math.floor(idle/60)
+    let idleSecond = idle%60
+
+    if(idleMinute < 10){idleMinute = "0"+idleMinute}
+    if(idleSecond < 10){idleSecond = "0"+idleSecond}
+
+return idleHour + ":" + idleMinute+":" + idleSecond
 }
 
 // ============================================================

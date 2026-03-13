@@ -397,9 +397,56 @@ return totalHour + ":" + totalMinute + ":" + totalSecond
 // Returns: integer (net pay)
 // ============================================================
 function getNetPay(driverID, actualHours, requiredHours, rateFile) {
-    // TODO: Implement this function
-}
 
+let content = fs.readFileSync(rateFile, "utf8")
+let lines = content.trim().split("\n")
+
+let basePay = 0
+let tier = 0
+
+for(let i = 0; i < lines.length; i++){
+    let row = lines[i].split(",")
+
+    if(row[0].trim() == driverID){
+        basePay = parseInt(row[2].trim())
+        tier = parseInt(row[3].trim())}}
+
+let actualParts = actualHours.split(":")
+let actualH = parseInt(actualParts[0])
+let actualM = parseInt(actualParts[1])
+let actualS = parseInt(actualParts[2])
+
+let requiredParts = requiredHours.split(":")
+let requiredH = parseInt(requiredParts[0])
+let requiredM = parseInt(requiredParts[1])
+let requiredS = parseInt(requiredParts[2])
+
+let actualTotal = actualH * 3600 + actualM * 60 + actualS
+let requiredTotal = requiredH * 3600 + requiredM * 60 + requiredS
+
+if(actualTotal >= requiredTotal){return basePay}
+
+let missingSeconds = requiredTotal - actualTotal
+let allowedHours = 0
+
+if(tier == 1){allowedHours = 50}
+else if(tier == 2){allowedHours = 20}
+else if(tier == 3){allowedHours = 10}
+else if(tier == 4){allowedHours = 3}
+
+let allowedSeconds = allowedHours * 3600
+missingSeconds = missingSeconds - allowedSeconds
+
+if(missingSeconds <= 0){return basePay}
+
+let missingHours = Math.floor(missingSeconds / 3600)
+
+let deductionRatePerHour = Math.floor(basePay / 185)
+let salaryDeduction = missingHours * deductionRatePerHour
+let netPay = basePay - salaryDeduction
+
+return netPay
+}
 module.exports = {
     getShiftDuration,
     getIdleTime,
